@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'views/splash_screen.dart';
+import 'package:flutter/rendering.dart';
+import 'routes/routes.dart';
 
 void main() {
+  debugPaintSizeEnabled = true;
   runApp(const MyApp());
 }
 
@@ -13,8 +15,8 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       title: 'Sehatech',
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      onGenerateRoute: Routes.generateRoute,
+      initialRoute: Routes.splash,
     );
   }
 }
-

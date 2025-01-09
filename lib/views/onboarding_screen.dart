@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../utils/colors.dart';
+import 'activationcode_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -16,7 +17,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: AppColors.primaryBlue,
       body: Column(
@@ -33,7 +33,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 OnboardingPage(
                   imagePath: 'assets/img/page1.png',
                   title: 'Keep your health',
-                  content: 'Our app will help you manage your medications at the time they are due.',
+                  content:
+                      'Our app will help you manage your medications at the time they are due.',
                 ),
                 OnboardingPage(
                   imagePath: 'assets/img/page2.png',
@@ -43,7 +44,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 OnboardingPage(
                   imagePath: 'assets/img/page3.png',
                   title: 'Keep your health',
-                  content: 'Our app will help you manage your medications at the time they are due.',
+                  content:
+                      'Our app will help you manage your medications at the time they are due.',
                 ),
               ],
             ),
@@ -71,7 +73,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         curve: Curves.easeInOut,
                       );
                     } else {
-                      
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ActivationCodeScreen()),
+                      );
                     }
                   },
                   child: Stack(
@@ -83,7 +89,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: CircularProgressIndicator(
                           value: (currentIndex + 1) / 3,
                           strokeWidth: 3,
-                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              const AlwaysStoppedAnimation<Color>(Colors.white),
                           backgroundColor: Colors.white38,
                         ),
                       ),
@@ -92,11 +99,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         width: 55,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white, 
-                          border: Border.all(color: Colors.transparent, width: 3),
+                          color: Colors.white,
+                          border:
+                              Border.all(color: Colors.transparent, width: 3),
                         ),
                         child: const Center(
-                          child: Icon(Icons.chevron_right, color: AppColors.primaryBlue, size: 50), 
+                          child: Icon(Icons.chevron_right,
+                              color: AppColors.primaryBlue, size: 50),
                         ),
                       ),
                     ],
@@ -131,7 +140,7 @@ class OnboardingPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(imagePath, height: 200), 
+          Image.asset(imagePath, height: 200),
           const SizedBox(height: 40),
           Text(
             title,
