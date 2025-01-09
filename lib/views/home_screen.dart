@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
+import '../routes/routes.dart';
 import '../utils/colors.dart';
 
 class CustomCardExample extends StatelessWidget {
@@ -99,7 +101,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[50],
+      backgroundColor: AppColors.whiteBg,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -113,47 +115,119 @@ class HomeScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 30),
+
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: List.generate(7, (index) {
+                            // Days from Monday to Sunday
                             final days = [
+                              "Mo",
                               "Tu",
                               "We",
                               "Th",
                               "Fr",
                               "Sa",
-                              "Su",
-                              "Mo"
+                              "Su"
                             ];
-                            return Column(
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: index == 3
-                                      ? AppColors.primaryBlue
-                                      : Colors.grey[200],
-                                  radius: 18,
-                                  child: Text(
-                                    "${index + 2}",
+                            final today = DateTime.now();
+                            final currentDay =
+                                today.weekday; // 1 (Monday) to 7 (Sunday)
+
+                            // Calculate the date for the current day in the week
+                            final startOfWeek = today.subtract(Duration(
+                                days: today.weekday - 1)); // Start from Monday
+                            final dayOfMonth =
+                                startOfWeek.add(Duration(days: index)).day;
+
+                            // Check if the current day is today
+                            final isToday = (index + 1) == currentDay;
+
+                            // Check if the date is before today
+                            final isPastDate = startOfWeek
+                                .add(Duration(days: index))
+                                .isBefore(today);
+
+                            // Mock data: Replace this with your actual logic to check if medication was taken
+                            final isMedicationTaken =
+                                index % 2 == 0; // Example: Alternating days
+
+                            return Container(
+                              decoration: isToday
+                                  ? BoxDecoration(
+                                      color: AppColors
+                                          .black, // Background color for today
+                                      borderRadius: BorderRadius.circular(
+                                          35), // Rounded corners
+                                    )
+                                  : null,
+                              padding: EdgeInsets.all(5),
+                              child: Column(
+                                children: [
+                                  if (isPastDate)
+                                    Container(
+                                      width: 36,
+                                      height: 36,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: isMedicationTaken
+                                              ? AppColors.green
+                                              : AppColors.red,
+                                          width: 4,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "$dayOfMonth",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  if (!isPastDate)
+                                    CircleAvatar(
+                                      backgroundColor: isToday
+                                          ? AppColors.primaryBlue
+                                          : AppColors.white,
+                                      radius: 18,
+                                      child: Text(
+                                        "$dayOfMonth",
+                                        style: TextStyle(
+                                          color: isToday
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    days[index],
                                     style: TextStyle(
-                                        color: index == 3
-                                            ? Colors.white
-                                            : Colors.black),
+                                      color:
+                                          isToday ? Colors.white : Colors.black,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 5),
-                                Text(days[index]),
-                              ],
+                                ],
+                              ),
                             );
                           }),
                         ),
                       ),
+
                       SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
-                          "Friday, Nov 20",
+                          DateFormat('EEEE, MMM d').format(DateTime.now()),
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -233,14 +307,14 @@ class HomeScreen extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      buildBottomNavItem(
+                      _buildBottomNavItem(context, Routes.journal,
                           'assets/img/journal_icon.png', 'Journal'),
-                      buildBottomNavItem(
+                      _buildBottomNavItem(context, Routes.health,
                           'assets/img/health_icon.png', 'Health'),
                       SizedBox(width: 40),
-                      buildBottomNavItem(
+                      _buildBottomNavItem(context, Routes.statistics,
                           'assets/img/statistics_icon.png', 'Statistics'),
-                      buildBottomNavItem(
+                      _buildBottomNavItem(context, Routes.rating,
                           'assets/img/rating_icon.png', 'Rating'),
                     ],
                   ),
@@ -253,8 +327,12 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget buildBottomNavItem(String assetPath, String label) {
-    return Flexible(
+  Widget _buildBottomNavItem(
+      BuildContext context, String route, String assetPath, String label) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, route); // Navigate to the specified route
+      },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -269,7 +347,10 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.only(top: 2),
             child: Text(
               label,
-              style: TextStyle(color: Colors.white, fontSize: 10),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+              ),
             ),
           ),
         ],

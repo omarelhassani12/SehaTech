@@ -1,0 +1,17 @@
+import 'package:flutter/material.dart';
+
+class RatingPage extends StatelessWidget {
+  const RatingPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Rating'),
+      ),
+      body: Center(
+        child: Text('Rating Page Content'),
+      ),
+    );
+  }
+}
