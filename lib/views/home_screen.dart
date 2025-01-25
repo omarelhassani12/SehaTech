@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../data/medication_schedule.dart';
 import '../routes/routes.dart';
 import '../utils/colors.dart';
+import '../widgets/custom_card_medicaments.dart';
+import '../widgets/custom_filter.dart';
 
 class CustomCardExample extends StatelessWidget {
   const CustomCardExample({super.key});
@@ -76,7 +79,7 @@ class CustomCardExample extends StatelessWidget {
                     ),
                     Positioned(
                       top: 10,
-                      left: 10, // Adjust as needed
+                      left: 10,
                       child: Image.asset(
                         'assets/img/person_drinking.png',
                         width: 80,
@@ -95,189 +98,232 @@ class CustomCardExample extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<Map<String, dynamic>> filterOptions = [
+    {"label": "All day", "selected": false},
+    {"label": "Morning", "selected": true},
+    {"label": "Afternoon", "selected": false},
+    {"label": "Evening", "selected": false},
+  ];
+
+  void handleFilterSelection(String label, bool isSelected) {
+    setState(() {
+      for (var option in filterOptions) {
+        if (option['label'] == label) {
+          option['selected'] = isSelected;
+        } else {
+          option['selected'] = false;
+        }
+      }
+    });
+  }
+
+  List<Map<String, dynamic>> getFilteredItems() {
+    final selectedFilter = filterOptions.firstWhere(
+      (option) => option['selected'] == true,
+      orElse: () => filterOptions.first,
+    )['label'];
+
+    if (selectedFilter == "All day") {
+      return medicationSchedule;
+    }
+
+    return medicationSchedule.where((item) {
+      final time = item['time'].toLowerCase();
+      final hour = int.parse(time.split(':')[0].trim());
+
+      if (selectedFilter == "Morning") {
+        return time.contains("am") && hour < 12;
+      } else if (selectedFilter == "Afternoon") {
+        return time.contains("pm") && hour >= 12 && hour < 6;
+      } else if (selectedFilter == "Evening") {
+        return time.contains("pm") && hour >= 6;
+      }
+      return false;
+    }).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final filteredItems = getFilteredItems();
+
     return Scaffold(
       backgroundColor: AppColors.whiteBg,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(7, (index) {
+                        final days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+                        final today = DateTime.now();
+                        final currentDay = today.weekday;
 
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(7, (index) {
-                            // Days from Monday to Sunday
-                            final days = [
-                              "Mo",
-                              "Tu",
-                              "We",
-                              "Th",
-                              "Fr",
-                              "Sa",
-                              "Su"
-                            ];
-                            final today = DateTime.now();
-                            final currentDay =
-                                today.weekday; // 1 (Monday) to 7 (Sunday)
+                        final startOfWeek = today.subtract(
+                          Duration(days: today.weekday - 1),
+                        );
+                        final dayOfMonth = startOfWeek
+                            .add(
+                              Duration(days: index),
+                            )
+                            .day;
 
-                            // Calculate the date for the current day in the week
-                            final startOfWeek = today.subtract(Duration(
-                                days: today.weekday - 1)); // Start from Monday
-                            final dayOfMonth =
-                                startOfWeek.add(Duration(days: index)).day;
+                        final isToday = (index + 1) == currentDay;
+                        final isPastDate = startOfWeek
+                            .add(Duration(days: index))
+                            .isBefore(today);
+                        final isMedicationTaken = index % 2 == 0;
 
-                            // Check if the current day is today
-                            final isToday = (index + 1) == currentDay;
-
-                            // Check if the date is before today
-                            final isPastDate = startOfWeek
-                                .add(Duration(days: index))
-                                .isBefore(today);
-
-                            // Mock data: Replace this with your actual logic to check if medication was taken
-                            final isMedicationTaken =
-                                index % 2 == 0; // Example: Alternating days
-
-                            return Container(
-                              decoration: isToday
-                                  ? BoxDecoration(
-                                      color: AppColors
-                                          .black, // Background color for today
-                                      borderRadius: BorderRadius.circular(
-                                          35), // Rounded corners
-                                    )
-                                  : null,
-                              padding: EdgeInsets.all(5),
-                              child: Column(
-                                children: [
-                                  if (isPastDate)
-                                    Container(
-                                      width: 36,
-                                      height: 36,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: isMedicationTaken
-                                              ? AppColors.green
-                                              : AppColors.red,
-                                          width: 4,
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          "$dayOfMonth",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                        return Container(
+                          decoration: isToday
+                              ? BoxDecoration(
+                                  color: AppColors.black,
+                                  borderRadius: BorderRadius.circular(35),
+                                )
+                              : null,
+                          padding: EdgeInsets.all(5),
+                          child: Column(
+                            children: [
+                              if (isPastDate)
+                                Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: isMedicationTaken
+                                          ? AppColors.green
+                                          : AppColors.red,
+                                      width: 4,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "$dayOfMonth",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                  if (!isPastDate)
-                                    CircleAvatar(
-                                      backgroundColor: isToday
-                                          ? AppColors.primaryBlue
-                                          : AppColors.white,
-                                      radius: 18,
-                                      child: Text(
-                                        "$dayOfMonth",
-                                        style: TextStyle(
-                                          color: isToday
-                                              ? Colors.white
-                                              : Colors.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  SizedBox(height: 5),
-                                  Text(
-                                    days[index],
+                                  ),
+                                ),
+                              if (!isPastDate)
+                                CircleAvatar(
+                                  backgroundColor: isToday
+                                      ? AppColors.primaryBlue
+                                      : AppColors.white,
+                                  radius: 18,
+                                  child: Text(
+                                    "$dayOfMonth",
                                     style: TextStyle(
                                       color:
                                           isToday ? Colors.white : Colors.black,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ],
+                                ),
+                              SizedBox(height: 5),
+                              Text(
+                                days[index],
+                                style: TextStyle(
+                                  color: isToday ? Colors.white : Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            );
-                          }),
-                        ),
-                      ),
-
-                      SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          DateFormat('EEEE, MMM d').format(DateTime.now()),
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            ],
                           ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: CustomCardExample(),
-                      ),
-                      SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            FilterChip(
-                              label: Text("All day"),
-                              onSelected: (bool value) {},
-                            ),
-                            FilterChip(
-                              label: Text("Morning"),
-                              selected: true,
-                              onSelected: (bool value) {},
-                            ),
-                            FilterChip(
-                              label: Text("Afternoon"),
-                              onSelected: (bool value) {},
-                            ),
-                            FilterChip(
-                              label: Text("Evening"),
-                              onSelected: (bool value) {},
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Spacer(), // Ensures remaining space is used, preventing overflow.
-                    ],
+                        );
+                      }),
+                    ),
                   ),
-                ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      DateFormat('EEEE, MMM d').format(DateTime.now()),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  CustomFilter(
+                    filterOptions: filterOptions,
+                    onFilterSelected: handleFilterSelection,
+                  ),
+                  SizedBox(height: 20),
+                  if (filteredItems.isNotEmpty)
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: filteredItems.length,
+                      itemBuilder: (context, index) {
+                        final item = filteredItems[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: CustomCardDisplay(
+                            imagePath: item['imagePath'],
+                            title: item['title'],
+                            subtitle: item['subtitle'],
+                            time: item['time'],
+                            date: item['date'],
+                            isDone: item['isDone'],
+                          ),
+                        );
+                      },
+                    )
+                  else
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/img/no-medicament-img.png',
+                            height: 150,
+                          ),
+                          const SizedBox(height: 16.0),
+                          const Text(
+                            "Add medicament",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.greyClr,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
               ),
             );
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, Routes.addMedicine);
+        },
         backgroundColor: AppColors.primaryBlue,
         shape: CircleBorder(),
         child: Icon(
@@ -331,7 +377,7 @@ class HomeScreen extends StatelessWidget {
       BuildContext context, String route, String assetPath, String label) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, route); // Navigate to the specified route
+        Navigator.pushNamed(context, route);
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,

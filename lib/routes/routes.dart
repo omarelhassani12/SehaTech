@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../views/activationcode_screen.dart';
 import '../views/home_screen.dart';
 import '../views/onboarding_screen.dart';
+import '../views/pages/add_medicine_page.dart';
 import '../views/pages/health_page.dart';
 import '../views/pages/journal_page.dart';
 import '../views/pages/rating_page.dart';
@@ -17,6 +18,7 @@ class Routes {
   static const String health = '/health';
   static const String statistics = '/statistics';
   static const String rating = '/rating';
+  static const String addMedicine = '/add-medicine';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -36,6 +38,8 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const StatisticsPage());
       case rating:
         return MaterialPageRoute(builder: (_) => const RatingPage());
+      case addMedicine:
+        return MaterialPageRoute(builder: (_) => const AddMedicineScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

@@ -1,0 +1,573 @@
+
+// import 'package:flutter/material.dart';
+// import 'package:intl/intl.dart';
+
+// import '../../utils/colors.dart';
+
+// class AddMedicineScreen extends StatefulWidget {
+//   const AddMedicineScreen({super.key});
+
+//   @override
+//   State<AddMedicineScreen> createState() => _AddMedicineScreenState();
+// }
+
+// class _AddMedicineScreenState extends State<AddMedicineScreen> {
+//   final PageController _pageController = PageController(initialPage: 0);
+//   int _currentStep = 0;
+
+//   // Data to be collected from the form
+//   String medicineName = '';
+//   String medicineType = '';
+//   int amount = 0;
+//   String connectionWithFood = '';
+//   String receptionFrequency = '';
+//   int intakesPerDay = 1;
+//   List<Map<String, dynamic>> schedule = [];
+//   DateTime courseStartDate = DateTime.now();
+//   DateTime courseEndDate = DateTime.now();
+//   bool remindMe = true;
+//   String doctorEmail = '';
+
+//   // @override
+//   // Widget build(BuildContext context) {
+//   //   return Scaffold(
+//   //     appBar: AppBar(
+//   //       title: const Text('Add Medicine'),
+//   //       bottom: PreferredSize(
+//   //         preferredSize: const Size.fromHeight(20),
+//   //         child: Padding(
+//   //           padding:
+//   //               const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+//   //           child: Row(
+//   //             children: [
+//   //               _buildProgressBar(0),
+//   //               const SizedBox(width: 4),
+//   //               _buildProgressBar(1),
+//   //               const SizedBox(width: 4),
+//   //               _buildProgressBar(2),
+//   //             ],
+//   //           ),
+//   //         ),
+//   //       ),
+//   //     ),
+//   //     body: PageView(
+//   //       controller: _pageController,
+//   //       physics: const NeverScrollableScrollPhysics(), // Disable swipe
+//   //       children: [
+//   //         _buildStep1(),
+//   //         _buildStep2(),
+//   //         _buildStep3(),
+//   //       ],
+//   //     ),
+//   //     bottomNavigationBar: Container(
+//   //       padding: const EdgeInsets.all(16.0),
+//   //       child: ElevatedButton(
+//   //         onPressed: () {
+//   //           if (_currentStep < 2) {
+//   //             _pageController.nextPage(
+//   //               duration: const Duration(milliseconds: 300),
+//   //               curve: Curves.easeInOut,
+//   //             );
+//   //             setState(() {
+//   //               _currentStep++;
+//   //             });
+//   //           } else {
+//   //             _submitForm();
+//   //           }
+//   //         },
+//   //         style: ElevatedButton.styleFrom(
+//   //           backgroundColor: AppColors.primaryBlue, // Blue color from the image
+//   //           foregroundColor: AppColors.white,
+//   //           padding: const EdgeInsets.symmetric(vertical: 16),
+//   //           shape: RoundedRectangleBorder(
+//   //             borderRadius: BorderRadius.circular(8),
+//   //           ),
+//   //         ),
+//   //         child: Text(
+//   //           _currentStep == 2 ? 'Add' : 'Continue',
+//   //           style: const TextStyle(
+//   //             fontSize: 16,
+//   //             fontWeight: FontWeight.w500,
+//   //           ),
+//   //         ),
+//   //       ),
+//   //     ),
+//   //   );
+//   // }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Add Medicine'),
+//         bottom: PreferredSize(
+//           preferredSize: const Size.fromHeight(20),
+//           child: Padding(
+//             padding:
+//                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+//             child: Row(
+//               children: [
+//                 _buildProgressBar(0),
+//                 const SizedBox(width: 4),
+//                 _buildProgressBar(1),
+//                 const SizedBox(width: 4),
+//                 _buildProgressBar(2),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//       body: PageView(
+//         controller: _pageController,
+//         physics: const NeverScrollableScrollPhysics(), // Disable swipe
+//         children: [
+//           _buildStep1(),
+//           _buildStep2(),
+//           _buildStep3(),
+//         ],
+//       ),
+//       bottomNavigationBar: Container(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             if (_currentStep > 0)
+//               TextButton(
+//                 onPressed: () {
+//                   _pageController.previousPage(
+//                     duration: const Duration(milliseconds: 300),
+//                     curve: Curves.easeInOut,
+//                   );
+//                   setState(() {
+//                     _currentStep--;
+//                   });
+//                 },
+//                 style: TextButton.styleFrom(
+//                   padding: const EdgeInsets.symmetric(vertical: 12),
+//                   minimumSize: const Size(double.infinity, 0),
+//                 ),
+//                 child: const Text(
+//                   'Back to previous step',
+//                   style: TextStyle(
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.w500,
+//                     color: AppColors.primaryBlue,
+//                   ),
+//                 ),
+//               ),
+//             const SizedBox(height: 8),
+//             ElevatedButton(
+//               onPressed: () {
+//                 if (_currentStep < 2) {
+//                   _pageController.nextPage(
+//                     duration: const Duration(milliseconds: 300),
+//                     curve: Curves.easeInOut,
+//                   );
+//                   setState(() {
+//                     _currentStep++;
+//                   });
+//                 } else {
+//                   _submitForm();
+//                 }
+//               },
+//               style: ElevatedButton.styleFrom(
+//                 backgroundColor: AppColors.primaryBlue,
+//                 foregroundColor: AppColors.white,
+//                 padding: const EdgeInsets.symmetric(vertical: 16),
+//                 shape: RoundedRectangleBorder(
+//                   borderRadius: BorderRadius.circular(8),
+//                 ),
+//                 minimumSize: const Size(double.infinity, 0),
+//               ),
+//               child: Text(
+//                 _currentStep == 2 ? 'Add' : 'Continue',
+//                 style: const TextStyle(
+//                   fontSize: 16,
+//                   fontWeight: FontWeight.w500,
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildProgressBar(int step) {
+//     return Expanded(
+//       child: Container(
+//         height: 4,
+//         decoration: BoxDecoration(
+//           color:
+//               _currentStep >= step ? AppColors.primaryBlue : Colors.grey[300],
+//           borderRadius: BorderRadius.circular(2),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildStep1() {
+//     return SingleChildScrollView(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           // Top Buttons
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceAround,
+//             children: [
+//               _buildTopButton(Icons.camera_alt, 'Add Photo'),
+//               _buildTopButton(Icons.document_scanner, 'Scan'),
+//               _buildTopButton(Icons.mic, 'Audio Vocal'),
+//             ],
+//           ),
+//           const SizedBox(height: 16),
+
+//           const Text(
+//             'Medicine Name',
+//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//           ),
+//           const SizedBox(height: 8),
+//           TextFormField(
+//             decoration: const InputDecoration(
+//               hintText: 'Mildronate 500 mg',
+//               border: OutlineInputBorder(),
+//             ),
+//             onChanged: (value) {
+//               setState(() {
+//                 medicineName = value;
+//               });
+//             },
+//           ),
+//           const SizedBox(height: 16),
+
+//           const Text(
+//             'Medicine Type',
+//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//           ),
+//           const SizedBox(height: 8),
+//           SizedBox(
+//             height: 120,
+//             width: double.infinity,
+//             child: ListView(
+//               scrollDirection: Axis.horizontal,
+//               children: <Widget>[
+//                 _buildMedicineTypeItem('Tablet', 'assets/img/tablet.png'),
+//                 _buildMedicineTypeItem('Capsule', 'assets/img/capsule.png'),
+//                 _buildMedicineTypeItem('Injection', 'assets/img/injection.png'),
+//                 _buildMedicineTypeItem('Drop', 'assets/img/drop.png'),
+//                 _buildMedicineTypeItem('Band', 'assets/img/band.png'),
+//               ],
+//             ),
+//           ),
+//           const SizedBox(height: 16),
+
+//           // Amount Input
+//           const Text(
+//             'Amount',
+//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//           ),
+//           const SizedBox(height: 8),
+//           TextFormField(
+//             decoration: const InputDecoration(
+//               hintText: '30',
+//               border: OutlineInputBorder(),
+//             ),
+//             keyboardType: TextInputType.number,
+//             onChanged: (value) {
+//               setState(() {
+//                 amount = int.tryParse(value) ?? 0;
+//               });
+//             },
+//           ),
+//           const SizedBox(height: 16),
+
+//           const Text(
+//             'Connection with food',
+//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//           ),
+//           const SizedBox(height: 8),
+//           Wrap(
+//             spacing: 8.0,
+//             runSpacing: 8.0,
+//             children: [
+//               _buildConnectionWithFoodButton('In time'),
+//               _buildConnectionWithFoodButton('Before eat'),
+//               _buildConnectionWithFoodButton('After eat'),
+//               _buildConnectionWithFoodButton('No matter'),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildTopButton(IconData icon, String label) {
+//     return ElevatedButton.icon(
+//       onPressed: () {},
+//       icon: Icon(
+//         icon,
+//         color: AppColors.primaryBlue,
+//       ),
+//       label: Text(
+//         label,
+//         style: TextStyle(
+//           color: AppColors.primaryBlue,
+//         ),
+//       ),
+//       style: ElevatedButton.styleFrom(
+//         backgroundColor: AppColors.ThirdBlue,
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(40),
+//         ),
+//         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+//       ),
+//     );
+//   }
+
+//   Widget _buildMedicineTypeItem(String title, String imagePath) {
+//     bool isSelected = medicineType == title;
+
+//     return GestureDetector(
+//       onTap: () {
+//         setState(() {
+//           medicineType = title;
+//         });
+//       },
+//       child: Padding(
+//         padding: const EdgeInsets.symmetric(horizontal: 8.0),
+//         child: Column(
+//           children: [
+//             Stack(
+//               alignment: Alignment.center,
+//               clipBehavior: Clip.none,
+//               children: [
+//                 Container(
+//                   height: 70,
+//                   width: 70,
+//                   decoration: BoxDecoration(
+//                     border: Border.all(
+//                       color: isSelected
+//                           ? AppColors.primaryBlue
+//                           : Colors.transparent,
+//                       width: 3,
+//                     ),
+//                     shape: BoxShape.circle,
+//                   ),
+//                   child: Image.asset(imagePath, height: 50, width: 50),
+//                 ),
+//                 if (isSelected)
+//                   Positioned(
+//                     bottom: -3,
+//                     right: -3,
+//                     child: CircleAvatar(
+//                       radius: 10,
+//                       backgroundColor: AppColors.primaryBlue,
+//                       child: const Icon(
+//                         Icons.check,
+//                         color: Colors.white,
+//                         size: 14,
+//                       ),
+//                     ),
+//                   ),
+//               ],
+//             ),
+//             const SizedBox(height: 4),
+//             Text(
+//               title,
+//               style: TextStyle(
+//                 color: isSelected ? AppColors.primaryBlue : Colors.black,
+//                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildConnectionWithFoodButton(String label) {
+//     bool isSelected = connectionWithFood == label;
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(horizontal: 4),
+//       child: ElevatedButton(
+//         onPressed: () {
+//           setState(() {
+//             connectionWithFood = isSelected ? '' : label;
+//           });
+//         },
+//         style: ElevatedButton.styleFrom(
+//           backgroundColor: isSelected ? AppColors.black : AppColors.whiteBg,
+//           foregroundColor: isSelected ? AppColors.white : AppColors.greyClr,
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(50),
+//           ),
+//           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+//         ),
+//         child: Text(
+//           label,
+//           style: TextStyle(fontSize: 16),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildStep2() {
+//     return SingleChildScrollView(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           const Text(
+//             'Reception Frequency',
+//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//           ),
+//           const SizedBox(height: 8),
+//           DropdownButtonFormField<String>(
+//             decoration: const InputDecoration(
+//               border: OutlineInputBorder(),
+//             ),
+//             items: <String>['Every day', 'Every other day', 'Weekly']
+//                 .map((String value) {
+//               return DropdownMenuItem<String>(
+//                 value: value,
+//                 child: Text(value),
+//               );
+//             }).toList(),
+//             onChanged: (String? newValue) {
+//               setState(() {
+//                 receptionFrequency = newValue ?? '';
+//               });
+//             },
+//           ),
+//           const SizedBox(height: 16),
+//           const Text(
+//             'Number of intakes per day',
+//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//           ),
+//           const SizedBox(height: 8),
+//           TextFormField(
+//             decoration: const InputDecoration(
+//               hintText: 'e.g., 1',
+//               border: OutlineInputBorder(),
+//             ),
+//             keyboardType: TextInputType.number,
+//             onChanged: (value) {
+//               setState(() {
+//                 intakesPerDay = int.tryParse(value) ?? 1;
+//               });
+//             },
+//           ),
+//           const SizedBox(height: 16),
+//           const Text(
+//             'Course Duration',
+//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//           ),
+//           const SizedBox(height: 8),
+//           Row(
+//             children: [
+//               Expanded(
+//                 child: TextButton(
+//                   onPressed: () async {
+//                     final selectedDate = await showDatePicker(
+//                       context: context,
+//                       initialDate: courseStartDate,
+//                       firstDate: DateTime.now(),
+//                       lastDate: DateTime(2100),
+//                     );
+//                     if (selectedDate != null) {
+//                       setState(() {
+//                         courseStartDate = selectedDate;
+//                       });
+//                     }
+//                   },
+//                   child: Text(
+//                     'Start: ${DateFormat('dd MMM yyyy').format(courseStartDate)}',
+//                   ),
+//                 ),
+//               ),
+//               Expanded(
+//                 child: TextButton(
+//                   onPressed: () async {
+//                     final selectedDate = await showDatePicker(
+//                       context: context,
+//                       initialDate: courseEndDate,
+//                       firstDate: DateTime.now(),
+//                       lastDate: DateTime(2100),
+//                     );
+//                     if (selectedDate != null) {
+//                       setState(() {
+//                         courseEndDate = selectedDate;
+//                       });
+//                     }
+//                   },
+//                   child: Text(
+//                     'End: ${DateFormat('dd MMM yyyy').format(courseEndDate)}',
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildStep3() {
+//     return SingleChildScrollView(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           const Text(
+//             'Remind Me',
+//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//           ),
+//           const SizedBox(height: 8),
+//           Switch(
+//             value: remindMe,
+//             onChanged: (value) {
+//               setState(() {
+//                 remindMe = value;
+//               });
+//             },
+//           ),
+//           const SizedBox(height: 16),
+//           const Text(
+//             'Doctor Email',
+//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//           ),
+//           const SizedBox(height: 8),
+//           TextFormField(
+//             decoration: const InputDecoration(
+//               hintText: 'e.g., mohamedidrissi@gmail.com',
+//               border: OutlineInputBorder(),
+//             ),
+//             onChanged: (value) {
+//               setState(() {
+//                 doctorEmail = value;
+//               });
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   void _submitForm() {
+//     // Handle form submission
+//     print('Medicine Name: $medicineName');
+//     print('Medicine Type: $medicineType');
+//     print('Amount: $amount');
+//     print('Connection with Food: $connectionWithFood');
+//     print('Reception Frequency: $receptionFrequency');
+//     print('Intakes Per Day: $intakesPerDay');
+//     print('Course Start Date: $courseStartDate');
+//     print('Course End Date: $courseEndDate');
+//     print('Remind Me: $remindMe');
+//     print('Doctor Email: $doctorEmail');
+
+//     // Navigate back or show a success message
+//     Navigator.pop(context);
+//   }
+// }
